@@ -14,13 +14,12 @@ clc;
 
 addpath('./Functions');
 
-o = imread('cell.jpg');
-o = rgb2gray(o);
-o = imresize(o,[500,500]);
-o = 1-im2double(o);
+f = imread('cell.jpg');
+f = rgb2gray(f);
+f = imresize(f,[500,500]);
+f = 1-im2double(f);
 
 % inout signal f 
-f=o;
 figure;imshow(abs(f),[],'border','tight');
 
 
