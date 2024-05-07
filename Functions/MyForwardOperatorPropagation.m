@@ -1,7 +1,10 @@
-function S=MyForwardOperatorPropagation(eta,E,Nx,Ny,Nz,phase)
+function S=MyForwardOperatorPropagation(S,E,Nx,Ny,Nz,phase)
 
-eta=reshape(MyV2C(eta),Nx,Ny,Nz);
+S=reshape(MyV2C(S),Nx,Ny);
 
-S=MyForwardPropagation(eta,E,Nx,Ny,Nz,phase);
+S=S.*E;
+S=fftshift(fft2(S));
+S = S.*phase;
+S=real((ifft2(ifftshift(S))));
 
 S=MyC2V(S(:));
