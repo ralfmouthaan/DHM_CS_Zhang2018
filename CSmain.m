@@ -108,3 +108,5 @@ f_reconstruct=reshape(MyV2C(f_reconstruct),nx,ny,nz);
 re=(abs(f_reconstruct));
 re = im2double(re);
 figure,imshow(re,[])
+
+fprintf('Err = %0.5f\n', sum(sum(abs(f - re)))/nx/ny);
