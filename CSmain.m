@@ -39,10 +39,23 @@ Nx=nx;
 Ny=ny*nz*2;
 Nz=1;
 
+dx = deltaX;
+k0 = 1/lambda; % I think this should be 2pi/lambda
+x = (-nx/2:nx/2-1)*dx;
+kx = (-nx/2:nx/2-1)/(nx*dx);
+
 %% Propagation kernel (2)
-Phase=MyMakingPhase(nx,ny,z,lambda,deltaX,deltaY);
-figure;imagesc(plotdatacube(angle(Phase)));title('Phase of kernel');axis image;drawnow;
-axis off; colormap(hot); colorbar;
+
+Phase = GenerateKernel_ASM(k0, kx, z);
+
+figure;
+imagesc(angle(Phase));
+title('Phase of kernel');
+axis image;
+drawnow;
+colormap(hot); 
+colorbar;
+
 E0=ones(nx,ny);  % illumination light
 E=MyFieldsPropagation(E0,nx,ny,nz,Phase);  % propagation of illumination light
 
@@ -110,3 +123,11 @@ re = im2double(re);
 figure,imshow(re,[])
 
 fprintf('Err = %0.5f\n', sum(sum(abs(f - re)))/nx/ny);
+
+function Kernel = GenerateKernel_ASM(k0, kx, z)
+    
+    term = k0^2 - kx.^2 - kx.'.^2;
+    term(term < 0) = 0;
+    Kernel = exp(1i*2*pi*z*sqrt(term));
+
+end
