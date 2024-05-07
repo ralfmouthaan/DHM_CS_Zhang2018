@@ -20,7 +20,8 @@ f = imresize(f,[500,500]);
 f = 1-im2double(f);
 
 % inout signal f 
-figure;imshow(abs(f),[],'border','tight');
+figure;
+imshow(f);
 
 
 %% Paprameters (1)
