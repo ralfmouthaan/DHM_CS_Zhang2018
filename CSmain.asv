@@ -71,10 +71,10 @@ S=(S+1).*conj(S+1);
 
 % Propagation of reference field
 S1 = ones(nx,ny);
-S1=(S1+1).*conj(S1+1);
+S1=(S1+1).*conj(S1+1); % This is just 4
 
 % Diffracted field
-g = S./S1; % normalized 
+g = S;
 g = im2double(g);
 figure;
 imshow(abs(g));
@@ -112,9 +112,10 @@ Phi = @(f) MyTVphi(f,Nx,Ny,Nz);
 
 
 f_reconstruct=reshape(MyV2C(f_reconstruct),nx,ny,nz);
-re=(abs(f_reconstruct));
+re=abs(f_reconstruct);
 re = im2double(re);
-figure,imshow(re,[])
+figure,
+imshow(re)
 
 fprintf('Err = %0.5f\n', sum(sum(abs(f - re)))/nx/ny);
 

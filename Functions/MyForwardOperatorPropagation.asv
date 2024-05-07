@@ -7,6 +7,5 @@ S=fftshift(fft2(S));
 S = S.*phase;
 S=ifft2(ifftshift(S));
 S = real(S);
-S = S;
 
 S=MyC2V(S(:));

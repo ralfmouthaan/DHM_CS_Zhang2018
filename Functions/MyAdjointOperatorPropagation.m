@@ -2,6 +2,7 @@ function S=MyAdjointOperatorPropagation(S,E,Nx,Ny,Nz,phase)
 
 S=reshape(MyV2C(S),Nx,Ny);
 
+S = S;
 S=ifftshift(ifft2(S));
 S=conj(phase).*S;
 S=fft2(ifftshift(S));

@@ -67,14 +67,14 @@ S=f.*E;
 S=fftshift(fft2(S));
 S=S.*Phase;
 S=ifft2(ifftshift(S));
-S=(S+1).*conj(S+1);
+%S=(S+1).*conj(S+1);
 
 % Propagation of reference field
 S1 = ones(nx,ny);
 S1=(S1+1).*conj(S1+1); % This is just 4
 
 % Diffracted field
-g = S./S1;
+g = real(S);
 g = im2double(g);
 figure;
 imshow(abs(g));
