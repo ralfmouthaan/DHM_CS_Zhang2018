@@ -61,27 +61,24 @@ E=E.*conj(Phase);
 E=ifft2(ifftshift(E));
 
 %% Field measurement and backpropagation (3)
-cEs=zeros(nx,ny,nz);
-Es=f.*E;
-for i=1:nz
-    cEs(:,:,i)=fftshift(fft2(Es(:,:,i)));
-end
-cEsp=sum(cEs.*Phase,3);
-S=(ifft2(ifftshift(cEsp)));
 
-f1 = ones(nx,ny);
-Es1=f1.*E;
-for i=1:nz
-    cEs1(:,:,i)=fftshift(fft2(Es1(:,:,i)));
-end
-cEsp1=sum(cEs1.*Phase,3);
-S1=(ifft2(ifftshift(cEsp1)));
+% Propagation of object field
+S=f.*E;
+S=fftshift(fft2(S));
+S=S.*Phase;
+S=ifft2(ifftshift(S));
+S=(S+1).*conj(S+1);
 
-% squared field
-s=(S+1).*conj(S+1);
-s1=(S1+1).*conj(S1+1);
-%  diffracted field
-g = s./s1; % normalized 
+% Propagation of reference field
+S1 = ones(nx,ny);
+S1=S1.*E;
+S1=fftshift(fft2(S1));
+S1=S1.*Phase;
+S1=ifft2(ifftshift(S1));
+S1=(S1+1).*conj(S1+1);
+
+% Diffracted field
+g = S./S1; % normalized 
 g = im2double(g);
 figure;
 imshow(abs(g));
