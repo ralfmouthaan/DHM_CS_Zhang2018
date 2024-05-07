@@ -1,10 +1,10 @@
-function eta=MyAdjointOperatorPropagation(S,E,Nx,Ny,Nz,phase)
+function S=MyAdjointOperatorPropagation(S,E,Nx,Ny,Nz,phase)
 
 S=reshape(MyV2C(S),Nx,Ny);
 
-cEsp=ifftshift(ifft2(real(S)));
-cEs=conj(phase).*cEsp;
-eta=fft2(ifftshift(cEs));
-eta=conj(E).*eta;
+S=ifftshift(ifft2(real(S)));
+S=conj(phase).*S;
+S=fft2(ifftshift(S));
+S=conj(E).*S;
 
-eta=MyC2V(eta(:));
+S=MyC2V(S(:));
