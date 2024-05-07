@@ -85,9 +85,6 @@ g = s./s1; % normalized
 g = im2double(g);
 figure;imshow(abs(g),[]);title('Diffracted field')
 g=MyC2V(g(:));
-transf=MyAdjointOperatorPropagation(g,E,nx,ny,nz,Phase);
-transf=reshape(MyV2C(transf),nx,ny,nz);
-figure;imshow(plotdatacube(abs(transf)),[],'border','tight')
 
 %% Propagation operator (4)
 A = @(f_twist) MyForwardOperatorPropagation(f_twist,E,nx,ny,nz,Phase);  % forward propagation operator
