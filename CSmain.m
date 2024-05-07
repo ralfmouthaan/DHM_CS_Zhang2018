@@ -1,5 +1,17 @@
+% Ralf Mouthaan
+% University of Adelaide
+% May 2024
+% 
+% Fork of Zhang's Compressive DHM code.
+% Original paper: Zhang et al. "Twin-Image-Free Holography: A Compressive
+% Sensing Approach", PRL 2018.
+% 
+% I'm aiming to refactor Zhang's code to understand how it works.
+ 
 close all;
-clear all;clc;
+clear variables;
+clc;
+
 addpath('./Functions');
 
 o = imread('cell.jpg');
