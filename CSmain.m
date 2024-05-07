@@ -54,8 +54,11 @@ colormap(hot);
 colorbar;
 drawnow;
 
-E0=ones(nx,ny);  % illumination light
-E=MyFieldsPropagation(E0,nx,ny,nz,Phase);  % propagation of illumination light
+ % Propagation of illumination
+E=ones(nx,ny); 
+E=fftshift(fft2(E));
+E=E.*conj(Phase);
+E=ifft2(ifftshift(E));
 
 %% Field measurement and backpropagation (3)
 cEs=zeros(nx,ny,nz);
