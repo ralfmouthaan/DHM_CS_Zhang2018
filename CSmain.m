@@ -19,12 +19,10 @@ f = rgb2gray(f);
 f = imresize(f,[500,500]);
 f = 1-im2double(f);
 
-% inout signal f 
 figure;
 imshow(f);
 
-
-%% Paprameters (1)
+%% Parameters (1)
 nx=size(f,1);  % data size
 ny=size(f,2);
 nz=1;
@@ -52,9 +50,9 @@ figure;
 imagesc(angle(Phase));
 title('Phase of kernel');
 axis image;
-drawnow;
 colormap(hot); 
 colorbar;
+drawnow;
 
 E0=ones(nx,ny);  % illumination light
 E=MyFieldsPropagation(E0,nx,ny,nz,Phase);  % propagation of illumination light
@@ -67,7 +65,6 @@ for i=1:nz
 end
 cEsp=sum(cEs.*Phase,3);
 S=(ifft2(ifftshift(cEsp)));
-
 
 f1 = ones(nx,ny);
 Es1=f1.*E;
@@ -83,7 +80,10 @@ s1=(S1+1).*conj(S1+1);
 %  diffracted field
 g = s./s1; % normalized 
 g = im2double(g);
-figure;imshow(abs(g),[]);title('Diffracted field')
+figure;
+imshow(abs(g));
+title('Diffracted field')
+
 g=MyC2V(g(:));
 
 %% Propagation operator (4)
