@@ -54,12 +54,9 @@ colormap(hot);
 colorbar;
 drawnow;
 
-A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,nz,Phase);  % forward propagation operator
-AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,nz,Phase);  % backward propagation operator
-
 %% Field measurement and backpropagation (3)
 
- % Propagation of illumination
+ % Backpropagation of illumination
 E=ones(nx,ny); 
 E=fftshift(fft2(E));
 E=E.*conj(Phase);
@@ -74,10 +71,6 @@ S=(S+1).*conj(S+1);
 
 % Propagation of reference field
 S1 = ones(nx,ny);
-S1=S1.*E;
-S1=fftshift(fft2(S1));
-S1=S1.*Phase;
-S1=ifft2(ifftshift(S1));
 S1=(S1+1).*conj(S1+1);
 
 % Diffracted field
@@ -88,6 +81,11 @@ imshow(abs(g));
 title('Diffracted field')
 
 g=MyC2V(g(:));
+
+%% Propagation Operators
+
+A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,nz,Phase);  % forward propagation operator
+AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,nz,Phase);  % backward propagation operator
 
 %% TwIST algorithm (5)
 tau = 0.005; 
