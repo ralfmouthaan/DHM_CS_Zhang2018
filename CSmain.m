@@ -67,14 +67,9 @@ S=f.*E;
 S=fftshift(fft2(S));
 S=S.*Phase;
 S=ifft2(ifftshift(S));
-%S=(S+1).*conj(S+1);
-
-% Propagation of reference field
-S1 = ones(nx,ny);
-S1=(S1+1).*conj(S1+1); % This is just 4
 
 % Diffracted field
-g = real(S);
+g = abs(S);
 g = im2double(g);
 figure;
 imshow(abs(g));
@@ -124,5 +119,19 @@ function Kernel = GenerateKernel_ASM(k0, kx, z)
     term = k0^2 - kx.^2 - kx.'.^2;
     term(term < 0) = 0;
     Kernel = exp(1i*2*pi*z*sqrt(term));
+
+end
+function x = V2C(x)
+
+    nx = length(x);
+    x = x(1:nx/2) + 1i*x(nx/2+1:nx);
+    nx = sqrt(length(x));
+    x = reshape(x, nx, nx);
+
+end
+function x = C2V(x)
+
+    x = x(:);
+    x=[real(x); imag(x)];
 
 end
