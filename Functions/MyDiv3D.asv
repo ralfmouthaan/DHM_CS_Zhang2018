@@ -2,11 +2,11 @@ function y=MyDiv3D(TV)
 
 n=size(TV);
 
-x = TV(:,:,:,1);
-x_shift = circshift(x, [1 0]);
-yx = x - x_shift;
-yx(1,:) = x(1,:);
-yx(n(1),:)= - x_shift(n(1),:);
+x = T(:,:)
+x_shift=circshift(TV(:,:,:,1),[1 0 0 0]);
+yx=TV(:,:,:,1)-x_shift;
+yx(1,:)=TV(1,:,:,1);
+yx(n(1),:)=-x_shift(n(1),:,:);
 
 
 y = TV(:,:,:,2);

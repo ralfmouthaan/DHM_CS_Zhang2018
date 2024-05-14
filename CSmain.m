@@ -1,3 +1,4 @@
+
 % Ralf Mouthaan
 % University of Adelaide
 % May 2024
@@ -135,11 +136,9 @@ function x = C2V(x)
     x=[real(x); imag(x)];
 
 end
-function y=TV(x,Nvx,Nvy)
+function y=TV(x,nx,ny)
 
-    x=reshape(x,Nvx,Nvy);
-    
-    [nx,ny]=size(x);
+    x=reshape(x,nx,ny);
     TV=zeros(nx,ny,3);
     
     TV(:,:,1)=circshift(x,[-1 0 0])-x;
