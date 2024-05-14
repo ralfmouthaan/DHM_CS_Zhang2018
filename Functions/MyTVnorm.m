@@ -1,8 +1,5 @@
-function [y,dif]=MyTVnorm(x)
+function y=MyTVnorm(x)
 
-TV=MyTV3D_conv(((x)));
 
-dif=(sum(abs(TV),4));
 
-y=sum(dif(:));
-
+end

@@ -89,7 +89,7 @@ tolA = 1e-6;
 iterations = 200;
 
 Psi = @(f,th) MyTVpsi(f,th,0.05,piter,Nx,Ny,Nz);
-Phi = @(f) MyTVphi(f,Nx,Ny,Nz);
+Phi = @(f) TV(f,Nx,Ny);
 
 [f_reconstruct,~,obj_twist,...
     times_twist,~,mse_twist]= ...
@@ -133,5 +133,21 @@ function x = C2V(x)
 
     x = x(:);
     x=[real(x); imag(x)];
+
+end
+function y=TV(x,Nvx,Nvy)
+
+    x=reshape(x,Nvx,Nvy);
+    
+    [nx,ny]=size(x);
+    TV=zeros(nx,ny,3);
+    
+    TV(:,:,1)=circshift(x,[-1 0 0])-x;
+    TV(nx,:,1)=0.0;
+    
+    TV(:,:,2)=circshift(x,[0 -1 0])-x;
+    TV(:,ny,2)=0.0;
+    
+    y=sum(abs(TV(:)));
 
 end

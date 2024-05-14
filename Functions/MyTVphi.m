@@ -1,7 +1,16 @@
-function y=MyTVphi(x,Nvx,Nvy,Nvz)
+function y=MyTVphi(x,Nvx,Nvy)
 
-% xx = phase_unwrap(angle(x));
+x=reshape(x,Nvx,Nvy);
 
-X=reshape(x,Nvx,Nvy,Nvz);
+[nx,ny]=size(x);
+TV=zeros(nx,ny,3);
 
-[y,dif]=MyTVnorm((X));
+TV(:,:,1)=circshift(x,[-1 0 0])-x;
+TV(nx,:,1)=0.0;
+
+TV(:,:,2)=circshift(x,[0 -1 0])-x;
+TV(:,ny,2)=0.0;
+
+y=sum(abs(TV(:)));
+
+end
