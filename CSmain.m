@@ -1,4 +1,3 @@
-
 % Ralf Mouthaan
 % University of Adelaide
 % May 2024
@@ -136,17 +135,10 @@ function x = C2V(x)
     x=[real(x); imag(x)];
 
 end
-function y=TV(x,nx,ny)
+function y = TV(x, nx, ny)
 
     x=reshape(x,nx,ny);
-    TV=zeros(nx,ny,3);
-    
-    TV(:,:,1)=circshift(x,[-1 0 0])-x;
-    TV(nx,:,1)=0.0;
-    
-    TV(:,:,2)=circshift(x,[0 -1 0])-x;
-    TV(:,ny,2)=0.0;
-    
+    TV = Grad(x);
     y=sum(abs(TV(:)));
 
 end
