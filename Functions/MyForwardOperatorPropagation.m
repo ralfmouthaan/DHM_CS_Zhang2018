@@ -1,4 +1,4 @@
-function S=MyForwardOperatorPropagation(S,E,Nx,Ny,Nz,phase)
+function S=MyForwardOperatorPropagation(S,E,Nx,Ny,phase)
 
 S=reshape(MyV2C(S),Nx,Ny);
 

@@ -1,10 +1,12 @@
-function y=Denoise(F,lambda,tau,nx,ny,nz)
+function y=Denoise(F,lambda,nx,ny)
 
 % This is a denoising algorithm. I do not know where it comes from or why
 % it works, but it does seem to work. Something to do with Rudin–Osher–Fatemi?
 
-F = reshape(F,nx,ny,nz);
+F = reshape(F,nx,ny);
 lambda = lambda*0.5;
+tau = 0.05; % Note, this tau is different in value to the one defined in the main script.
+             % But, I don't know if they have the same significance.
 
 [nx,ny] = size(F);
 pn = zeros(nx,ny,2);
@@ -23,4 +25,4 @@ end
 
 F = F - lambda.*div_pn;
 
-y = reshape(F,nx*ny*nz,1);
+y = reshape(F,nx*ny,1);

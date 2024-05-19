@@ -7,38 +7,46 @@
 % Sensing Approach", PRL 2018.
 % 
 % I'm aiming to refactor Zhang's code to understand how it works.
-
-%%
  
-close all; clear variables; clc;
+close all;
+clear variables;
+clc;
+
 addpath('./Functions');
 
 %% User-Defined Parameters
 
+filename = 'cell.jpg';
+
 nx = 500;
 ny = 500;
+nz = 1;
 lambda=0.532;  % wavelength (um)
+detector_size=4;  % pixel pitch (um)
+sensor_size=nx*detector_size;  % detector size (um)
 z=12000;  % distance from detector to first reconstructed plane (um)
-dx = 4; % um
-
+deltaX=detector_size;
+deltaY=detector_size;
 Nx=nx;
-Ny=ny*2;
+Ny=ny*nz*2;
+Nz=1;
 
+dx = deltaX;
 k0 = 1/lambda;
 x = (-nx/2:nx/2-1)*dx;
 kx = (-nx/2:nx/2-1)/(nx*dx);
 
 %% Read in image
 
-f = imread('cell.jpg');
+f = imread(filename);
 f = rgb2gray(f);
-f = imresize(f, [nx, ny]);
-f = 1 - im2double(f);
+f = imresize(f,[nx,ny]);
+f = 1-im2double(f);
 
 figure;
 imshow(f);
 
-%% Propagation kernel
+%% Propagation kernel (2)
 
 Phase = GenerateKernel_ASM(k0, kx, z);
 
@@ -50,7 +58,7 @@ colormap(hot);
 colorbar;
 drawnow;
 
-%% Field measurement and backpropagation
+%% Field measurement and backpropagation (3)
 
  % Backpropagation of illumination
 E=ones(nx,ny); 
@@ -75,10 +83,10 @@ g=MyC2V(g(:));
 
 %% Propagation Operators
 
-A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,Phase);  % forward propagation operator
-AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,Phase);  % backward propagation operator
+A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,nz,Phase);  % forward propagation operator
+AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,nz,Phase);  % backward propagation operator
 
-%% TwIST algorithm
+%% TwIST algorithm (5)
 tau = 0.005; 
 tolA = 1e-6;
 iterations = 200;
@@ -101,7 +109,7 @@ Phi = @(f) TV(f,Nx,Ny);
     'Verbose', 1);
 
 
-f_reconstruct=reshape(MyV2C(f_reconstruct),nx,ny);
+f_reconstruct=reshape(MyV2C(f_reconstruct),nx,ny,nz);
 re=abs(f_reconstruct);
 re = im2double(re);
 figure,
