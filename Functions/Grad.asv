@@ -9,8 +9,8 @@ function y = Grad(x)
     y(:,:,2)=circshift(x,[0 -1 0])-x;
 
     y(nx,:,1) = 0.0;
+    y(:,ny,1) = 0.0;
     y(:,ny,2) = 0.0;
-    y(:,ny/2,1) = 0.0;
-    y(:,ny/2,2) = 0.0;
+    y(nx,:,2) = 0.0;
 
 end
