@@ -15,14 +15,11 @@ addpath('./Functions');
 
 %% User-Defined Parameters
 
-nx = 500;
-ny = 500;
+nx = 500; ny = 500;
+Nx=nx; Ny=ny*2;
 lambda=0.532;  % wavelength (um)
 z=12000;  % distance from detector to first reconstructed plane (um)
 dx = 4; % um
-
-Nx=nx;
-Ny=ny*2;
 
 k0 = 1/lambda;
 x = (-nx/2:nx/2-1)*dx;
@@ -73,41 +70,31 @@ title('Diffracted field')
 
 g=MyC2V(g(:));
 
-%% Propagation Operators
+%% Function Definitions
 
-A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,Phase);  % forward propagation operator
-AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,Phase);  % backward propagation operator
-
-%% TwIST algorithm
 tau = 0.005; 
 tolA = 1e-6;
 iterations = 200;
 
-Psi = @(f,lambda) Denoise(f,lambda,Nx,Ny);
-Phi = @(f) TV(f,Nx,Ny);
+A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,Phase);  % forward propagation operator
+AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,Phase);  % backward propagation operator
+Psi = @(f,lambda) Denoise(f,lambda, Nx, Ny);
+Phi = @(f) TV(f, Nx, Ny);
 
-[f_reconstruct,~,obj_twist,...
-    times_twist,~,mse_twist]= ...
-    TwIST(g, A, tau,...
-    'AT', AT, ...
-    'Psi', Psi, ...
-    'Phi',Phi, ...
-    'Initialization',2,...
-    'Monotone',1,...
-    'StopCriterion',1,...
-    'MaxIterA',iterations,...
-    'MinIterA',iterations,...
-    'ToleranceA',tolA,...
-    'Verbose', 1);
+%% TwIST algorithm
 
+f_reconstruct = ...
+    TwIST(g, A, tau, 'AT', AT, 'Psi', Psi, 'Phi', Phi, ...
+    'Initialization',2, 'Monotone', 1, 'StopCriterion',1,...
+    'MaxIterA', iterations, 'MinIterA', iterations, ...
+    'ToleranceA', tolA, 'Verbose', 1);
 
-f_reconstruct=reshape(MyV2C(f_reconstruct),nx,ny);
-re=abs(f_reconstruct);
-re = im2double(re);
-figure,
-imshow(re)
+f_reconstruct = reshape(MyV2C(f_reconstruct), nx, ny);
 
-fprintf('Err = %0.5f\n', sum(sum(abs(f - re)))/nx/ny);
+figure;
+imshow(abs(f_reconstruct))
+
+fprintf('Err = %0.5f\n', sum(sum(abs(f - f_reconstruct)))/nx/ny);
 
 function Kernel = GenerateKernel_ASM(k0, kx, z)
     
