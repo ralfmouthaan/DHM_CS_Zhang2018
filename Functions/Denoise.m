@@ -1,4 +1,4 @@
-function y=MyTVpsi(F,lambda,tau,nx,ny,nz)
+function y=Denoise(F,lambda,tau,nx,ny,nz)
 
 % This is a denoising algorithm. I do not know where it comes from or why
 % it works, but it does seem to work. Something to do with Rudin–Osher–Fatemi?
