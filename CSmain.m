@@ -140,7 +140,7 @@ function F = BackwardPropagation(F, Nx, Ny, Kernel)
 end
 function RetVal = TotalVariance(F, Nx, Ny)
 
-    F=reshape(F,Nx,2*Ny);
+    F = V2C(F, Nx, Ny);
     RetVal = Grad(F);
     RetVal=sum(abs(RetVal(:)));
 
