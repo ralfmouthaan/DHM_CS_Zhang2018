@@ -34,6 +34,7 @@ f = 1 - im2double(f);
 
 figure;
 imshow(f);
+drawnow;
 
 %% Propagation kernel
 
@@ -63,7 +64,6 @@ S=ifft2(ifftshift(S));
 
 % Diffracted field
 g = abs(S);
-g = im2double(g);
 figure;
 imshow(abs(g));
 title('Diffracted field')
@@ -78,8 +78,8 @@ iterations = 200;
 
 A = @(fimg) MyForwardOperatorPropagation(fimg,E,nx,ny,Phase);  % forward propagation operator
 AT = @(fimg) MyAdjointOperatorPropagation(fimg,E,nx,ny,Phase);  % backward propagation operator
-Psi = @(f,lambda) Denoise(f,lambda, Nx, Ny);
-Phi = @(f) TV(f, Nx, Ny);
+Psi = @(f, lambda) Denoise(f, lambda, Nx, Ny);
+Phi = @(f) TotalVariance(f, Nx, Ny);
 
 %% TwIST algorithm
 
@@ -94,7 +94,7 @@ f_reconstruct = reshape(MyV2C(f_reconstruct), nx, ny);
 figure;
 imshow(abs(f_reconstruct))
 
-fprintf('Err = %0.5f\n', sum(sum(abs(f - f_reconstruct)))/nx/ny);
+fprintf('Err = %0.5f\n', sum(sum(abs(abs(f) - abs(f_reconstruct))))/nx/ny);
 
 function Kernel = GenerateKernel_ASM(k0, kx, z)
     
@@ -117,10 +117,40 @@ function x = C2V(x)
     x=[real(x); imag(x)];
 
 end
-function y = TV(x, nx, ny)
+function y = TotalVariance(x, nx, ny)
 
     x=reshape(x,nx,ny);
-    TV = Grad(x);
-    y=sum(abs(TV(:)));
+    y = Grad(x);
+    y=sum(abs(y(:)));
+
+end
+function y = Denoise(F,lambda,nx,ny)
+
+    % This is a denoising algorithm. I do not know where it comes from or why
+    % it works, but it does seem to work. Something to do with Rudin–Osher–Fatemi?
+    
+    F = reshape(F,nx,ny);
+    lambda = lambda*0.5;
+    tau = 0.05; % Note, this tau is different in value to the one defined in the main script.
+                 % But, I don't know if they have the same significance.
+    
+    [nx,ny] = size(F);
+    pn = zeros(nx,ny,2);
+    div_pn = zeros(nx,ny);
+    b = zeros(nx, ny);
+    
+    for i=1:4
+    
+        a = -Grad(div_pn-F./lambda);
+        b(:,:,1) = sqrt(a(:,:,1).^2 + a(:,:,2).^2);
+        b(:,:,2) = b(:,:,1);
+        pn = (pn+tau.*a)./(1.0+tau.*b);
+        div_pn = -Div(pn);
+        
+    end
+    
+    F = F - lambda.*div_pn;
+    
+    y = reshape(F,nx*ny,1);
 
 end
