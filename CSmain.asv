@@ -107,7 +107,7 @@ function F = V2C(F, nx, ny)
 
     assert(length(F) == nx*ny*2);
 
-    F = F(1:nx*ny) + 1i*F(nx*ny+1:nx*ny*2);
+    F = F(1:nx*ny) + 1i*F(nx*ny/2+1:nx*ny);
     F = reshape(F, nx, ny);
 
 end

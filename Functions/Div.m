@@ -9,4 +9,6 @@ function y=Div(F)
     y = F(:,:,2);
     yy = circshift(y, [0 1]) - y;
 
-y=yx+yy;
+    y=yx+yy;
+
+end
