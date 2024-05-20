@@ -16,9 +16,8 @@ addpath('./Functions');
 %% User-Defined Parameters
 
 nx = 500; ny = 500;
-Nx=nx; Ny=ny*2;
-lambda=0.532;  % wavelength (um)
-z=12000;  % distance from detector to first reconstructed plane (um)
+lambda = 0.532;  % wavelength (um)
+z = 12000;  % distance from detector to first reconstructed plane (um)
 dx = 4; % um
 
 k0 = 1/lambda;
@@ -78,8 +77,8 @@ iterations = 200;
 
 A = @(fimg) ForwardPropagation(fimg,E,nx,ny,Phase);  % forward propagation operator
 AT = @(fimg) BackwardPropagation(fimg,E,nx,ny,Phase);  % backward propagation operator
-Psi = @(f, lambda) Denoise(f, lambda, Nx, Ny);
-Phi = @(f) TotalVariance(f, Nx, Ny);
+Psi = @(f, lambda) Denoise(f, lambda, nx, ny);
+Phi = @(f) TotalVariance(f, nx, ny);
 
 %% TwIST algorithm
 
@@ -95,6 +94,8 @@ figure;
 imshow(abs(f_reconstruct))
 
 fprintf('Err = %0.5f\n', sum(sum(abs(abs(f) - abs(f_reconstruct))))/nx/ny);
+
+%% Functions
 
 function Kernel = GenerateKernel_ASM(k0, kx, z)
     
@@ -120,25 +121,25 @@ function F = C2V(F, nx, ny)
     F=[real(F); imag(F)];
 
 end
-function F = ForwardPropagation(F, E, Nx, Ny, phase)
+function F = ForwardPropagation(F, E, Nx, Ny, Kernel)
 
     F = V2C(F, Nx, Ny);
     
     %S = S.*E;
     F = fftshift(fft2(F));
-    F = F.*phase;
+    F = F.*Kernel;
     F = ifft2(ifftshift(F));
     F = abs(F);
     
     F = C2V(F, Nx, Ny);
 
 end
-function F = BackwardPropagation(F, E, Nx, Ny, phase)
+function F = BackwardPropagation(F, E, Nx, Ny, Kernel)
 
     F = V2C(F, Nx, Ny);
     
     F = ifftshift(ifft2(F));
-    F = conj(phase).*F;
+    F = conj(Kernel).*F;
     F = fft2(ifftshift(F));
     F = conj(E).*F;
     
@@ -147,7 +148,7 @@ function F = BackwardPropagation(F, E, Nx, Ny, phase)
 end
 function RetVal = TotalVariance(F, nx, ny)
 
-    F=reshape(F,nx,ny);
+    F=reshape(F,nx,2*ny);
     RetVal = Grad(F);
     RetVal=sum(abs(RetVal(:)));
 
@@ -157,19 +158,18 @@ function F = Denoise(F, lambda, nx, ny)
     % This is a denoising algorithm. I do not know where it comes from or why
     % it works, but it does seem to work. Something to do with Rudin–Osher–Fatemi?
     
-    F = reshape(F,nx,ny);
+    F = reshape(F,nx,2*ny);
     lambda = lambda*0.5;
     tau = 0.05; % Note, this tau is different in value to the one defined in the main script.
                  % But, I don't know if they have the same significance.
     
-    [nx,ny] = size(F);
-    pn = zeros(nx,ny,2);
-    div_pn = zeros(nx,ny);
-    b = zeros(nx, ny);
+    pn = zeros(nx,2*ny,2);
+    div_pn = zeros(nx,2*ny);
+    b = zeros(nx, 2*ny);
     
     for i=1:4
     
-        a = -Grad(div_pn-F./lambda);
+        a = -Grad(div_pn - F./lambda);
         b(:,:,1) = sqrt(a(:,:,1).^2 + a(:,:,2).^2);
         b(:,:,2) = b(:,:,1);
         pn = (pn+tau.*a)./(1.0+tau.*b);
@@ -179,7 +179,7 @@ function F = Denoise(F, lambda, nx, ny)
     
     F = F - lambda.*div_pn;
     
-    F = reshape(F,nx*ny,1);
+    F = reshape(F,2*nx*ny,1);
 
 end
 function RetVal = Grad(F)

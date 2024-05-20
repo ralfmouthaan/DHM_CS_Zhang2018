@@ -17,8 +17,8 @@ addpath('./Functions');
 
 nx = 500; ny = 500;
 Nx=nx; Ny=ny*2;
-lambda=0.532;  % wavelength (um)
-z=12000;  % distance from detector to first reconstructed plane (um)
+lambda = 0.532;  % wavelength (um)
+z = 12000;  % distance from detector to first reconstructed plane (um)
 dx = 4; % um
 
 k0 = 1/lambda;
@@ -96,6 +96,8 @@ imshow(abs(f_reconstruct))
 
 fprintf('Err = %0.5f\n', sum(sum(abs(abs(f) - abs(f_reconstruct))))/nx/ny);
 
+%% Functions
+
 function Kernel = GenerateKernel_ASM(k0, kx, z)
     
     term = k0^2 - kx.^2 - kx.'.^2;
@@ -107,7 +109,7 @@ function F = V2C(F, nx, ny)
 
     assert(length(F) == nx*ny*2);
 
-    F = F(1:nx*ny) + 1i*F(nx*ny/2+1:nx*ny);
+    F = F(1:nx*ny) + 1i*F(nx*ny+1:nx*ny*2);
     F = reshape(F, nx, ny);
 
 end
@@ -169,7 +171,7 @@ function F = Denoise(F, lambda, nx, ny)
     
     for i=1:4
     
-        a = -Grad(div_pn-F./lambda);
+        a = -Grad(div_pn - F./lambda);
         b(:,:,1) = sqrt(a(:,:,1).^2 + a(:,:,2).^2);
         b(:,:,2) = b(:,:,1);
         pn = (pn+tau.*a)./(1.0+tau.*b);
