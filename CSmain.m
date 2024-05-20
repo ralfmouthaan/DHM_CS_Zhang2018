@@ -142,7 +142,7 @@ function RetVal = TotalVariance(F, Nx, Ny)
 
     F = V2C(F, Nx, Ny);
     RetVal = Grad(F);
-    RetVal=sum(abs(RetVal(:)));
+    RetVal = sum(abs(RetVal(:)));
 
 end
 function F = Denoise(F, lambda, Nx, Ny)
@@ -150,19 +150,19 @@ function F = Denoise(F, lambda, Nx, Ny)
     % This is a denoising algorithm. I do not know where it comes from or why
     % it works, but it does seem to work. Something to do with Rudin–Osher–Fatemi?
     
-    F = reshape(F,Nx,2*Ny);
+    F = reshape(F, Nx, 2*Ny);
     lambda = lambda*0.5;
     tau = 0.05; % Note, this tau is different in value to the one defined in the main script.
-                 % But, I don't know if they have the same significance.
+                % But, I don't know if they have the same significance.
     
-    pn = zeros(Nx,2*Ny,2);
-    div_pn = zeros(Nx,2*Ny);
+    pn = zeros(Nx,2*Ny, 2);
+    div_pn = zeros(Nx, 2*Ny);
     b = zeros(Nx, 2*Ny);
     
-    for i=1:4
+    for i = 1:4
     
         a = -Grad(div_pn - F./lambda);
-        b(:,:,1) = sqrt(a(:,:,1).^2 + a(:,:,2).^2);
+        b(:,:,1) = sqrt(abs(a(:,:,1)).^2 + abs(a(:,:,2)).^2);
         b(:,:,2) = b(:,:,1);
         pn = (pn+tau.*a)./(1.0+tau.*b);
         div_pn = -Div(pn);
@@ -171,7 +171,7 @@ function F = Denoise(F, lambda, Nx, Ny)
     
     F = F - lambda.*div_pn;
     
-    F = reshape(F,2*Nx*Ny,1);
+    F = reshape(F, 2*Nx*Ny, 1);
 
 end
 function RetVal = Grad(F)
