@@ -55,34 +55,24 @@ colormap(hot);
 colorbar;
 drawnow;
 
+%% Function Definitions
+
+A = @(fimg) ForwardPropagation(fimg, Nx, Ny, Phase);  % forward propagation operator
+AT = @(fimg) BackwardPropagation(fimg, Nx, Ny, Phase);  % backward propagation operator
+Psi = @(f, lam) Denoise(f, lam, Nx, Ny);
+Phi = @(f) TotalVariance(f, Nx, Ny);
+
 %% Field measurement and backpropagation
 
- % Backpropagation of illumination
-E=ones(Nx,Ny); 
-E=fftshift(fft2(E));
-E=E.*conj(Phase);
-E=ifft2(ifftshift(E));
+g = C2V(f, Nx, Ny);
+g = A(g);
+g = V2C(g, Nx, Ny);
 
-% Propagation of object field
-S=f.*E;
-S=fftshift(fft2(S));
-S=S.*Phase;
-S=ifft2(ifftshift(S));
-
-% Diffracted field
-g = abs(S);
 figure;
 imshow(abs(g));
 title('Diffracted field')
 
 g = C2V(g, Nx, Ny);
-
-%% Function Definitions
-
-A = @(fimg) ForwardPropagation(fimg,E,Nx,Ny,Phase);  % forward propagation operator
-AT = @(fimg) BackwardPropagation(fimg,E,Nx,Ny,Phase);  % backward propagation operator
-Psi = @(f, lam) Denoise(f, lam, Nx, Ny);
-Phi = @(f) TotalVariance(f, Nx, Ny);
 
 %% TwIST algorithm
 
@@ -125,11 +115,10 @@ function F = C2V(F, Nx, Ny)
     F=[real(F); imag(F)];
 
 end
-function F = ForwardPropagation(F, E, Nx, Ny, Kernel)
+function F = ForwardPropagation(F, Nx, Ny, Kernel)
 
     F = V2C(F, Nx, Ny);
     
-    %S = S.*E;
     F = fftshift(fft2(F));
     F = F.*Kernel;
     F = ifft2(ifftshift(F));
@@ -138,14 +127,13 @@ function F = ForwardPropagation(F, E, Nx, Ny, Kernel)
     F = C2V(F, Nx, Ny);
 
 end
-function F = BackwardPropagation(F, E, Nx, Ny, Kernel)
+function F = BackwardPropagation(F, Nx, Ny, Kernel)
 
     F = V2C(F, Nx, Ny);
     
     F = ifftshift(ifft2(F));
     F = conj(Kernel).*F;
     F = fft2(ifftshift(F));
-    F = conj(E).*F;
     
     F = C2V(F, Nx, Ny);
 
