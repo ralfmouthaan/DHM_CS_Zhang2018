@@ -37,7 +37,9 @@ kx = (-Nx/2:Nx/2-1)/(Nx*dx);
 f = imread('cell.jpg');
 f = rgb2gray(f);
 f = imresize(f, [Nx, Ny]);
+f = im2double(f);
 f = 1 - im2double(f);
+%f = 1 + exp(1i*2*pi*f);
 
 figure;
 imshow(f);
@@ -57,8 +59,8 @@ drawnow;
 
 %% Function Definitions
 
-A = @(fimg) ForwardPropagation(fimg, Nx, Ny, Phase);  % forward propagation operator
-AT = @(fimg) BackwardPropagation(fimg, Nx, Ny, Phase);  % backward propagation operator
+A = @(fimg) ForwardPropagation(fimg, Nx, Ny, Phase); 
+AT = @(fimg) BackwardPropagation(fimg, Nx, Ny, Phase); 
 Psi = @(f, lam) Denoise(f, lam, Nx, Ny);
 Phi = @(f) TotalVariance(f, Nx, Ny);
 
@@ -85,7 +87,10 @@ f_reconstruct = ...
 f_reconstruct = V2C(f_reconstruct, Nx, Ny);
 
 figure;
+subplot(1,2,1);
 imshow(abs(f_reconstruct))
+subplot(1,2,2);
+imshow(angle(f_reconstruct));
 
 fprintf('Err = %0.5f\n', sum(sum(abs(abs(f) - abs(f_reconstruct))))/Nx/Ny);
 
@@ -149,13 +154,15 @@ function F = Denoise(F, lambda, Nx, Ny)
 
     % This is a denoising algorithm. I do not know where it comes from or why
     % it works, but it does seem to work. Something to do with Rudin–Osher–Fatemi?
+    % It acts on the real and imaginary components separately. Not sure if
+    % this is the best way.
     
     F = reshape(F, Nx, 2*Ny);
     lambda = lambda*0.5;
     tau = 0.05; % Note, this tau is different in value to the one defined in the main script.
                 % But, I don't know if they have the same significance.
     
-    pn = zeros(Nx,2*Ny, 2);
+    pn = zeros(Nx, 2*Ny, 2);
     div_pn = zeros(Nx, 2*Ny);
     b = zeros(Nx, 2*Ny);
     
